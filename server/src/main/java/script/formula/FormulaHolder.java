@@ -33,7 +33,7 @@ public class FormulaHolder {
         String actual = formula.replaceAll("\\s*","");
         if(formulas.containsKey(actual))
             return formulas.get(actual);
-        StringBuilder builder = new StringBuilder("package formulas;\nimport script.formula.Formula;\nimport static java.lang.Math.*;\npublic class FormulaInstance");
+        StringBuilder builder = new StringBuilder("package formulas;\nimport script.formula.Formula;\nimport static script.formula.FormulaUtils.*\nimport static java.lang.Math.*;\npublic class FormulaInstance");
         builder.append(formulaID);
         String className = "formulas.FormulaInstance" + formulaID;
         formulaID++;
