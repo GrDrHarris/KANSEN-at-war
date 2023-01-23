@@ -5,7 +5,7 @@ In order to make things more customizable, instead of giving several preset clas
 ```java
 import java.lang.Math.* //import Math to make code shorter
 //some irrelevant stuff
-public double calc(double arg...)
+public double calc(double... arg)
 {
     return X;
 }
