@@ -7,3 +7,18 @@ This is a naval war sim game, but cointains no scripts, only progame. My origina
 ## Other important stuff about gameplay
 
 TBD
+
+## Project Structure
+
+| Sub-forder | Description | Status | Language |
+| --- | --- | --- | --- |
+| `client` | The client of the game, a simple server <br> manager is provided | planning | Qt C++ |
+| `compiler` | The tool for compiling a script | planning | Not decided, <br> probably C++ |
+| `extracter` | The tool for extracting resources from <br> the original game files (also a walk <br> around of copyright charges) | planning | Depends on <br> different game |
+| `scriptingdoc` | Documents for scripters, the manual <br> for the whole project | writting | markdown |
+| `scriptingtool` | Some small tools for calculating | writting | python? |
+| `server` | The server of the game, can not be manager <br> directly. | writting | java |
+
+We may provide a `servermanager` in the future for better and advanced management of servers.
+
+If you think the progess is too slow, fork and make pull requests!
