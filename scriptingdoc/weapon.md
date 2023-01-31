@@ -283,3 +283,14 @@ There are four available navigation methods:
 What need to mention here is that because semi-active and active navigation is not technique widely used during WW2, in early versions these two options may not be supported.
 
 ### fuze
+
+Fuze determines under what condition the tropedo will explode. Common fuzes are below:
+
+- contact:
+  This is the easiest type of fuze, explodes when hitting the target. For most cases it has a really high reliability, but a counter-example is the MK-14.
+- noise:
+  This type of fuze fires once it leaves the min range and hear a noise large enough. May not be very reliablie and has a high rate of mistaken. If the target turns off its engine, it may mis fire.
+- magnetic:
+  This type of fuze fires when it detects a change in magnetic field, since the change is probably because of a large piece of iron, or, the target. Also this kind of fuze is not so reliable, and, will be countered if the target has demagnetizing devices installed.
+
+## Heavy Anti-Air Guns
