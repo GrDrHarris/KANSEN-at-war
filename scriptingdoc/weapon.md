@@ -210,7 +210,8 @@ The following is the arguments a torpedo can have. Some of them are same with Co
             /* the standard deviation of harm, Double
              */
             "harm" : "rand*500*max(0.2, -2.67e-5 *armor*armor + 1.4e-2 *armor - 0.233)",
-            /* a formula, harm when such ammo explodes when distance to armor is dist and thick is armor at 
+            /* a formula, harm when such ammo explodes when distance to armor
+             * is dist and thick is armor at 
              * rand = clamp(N(1, harm_standard_deviation), 0, 2)
              * armor: thickness of the armor, in mm
              * dist: distance from the target when explodes, in meters
@@ -294,3 +295,152 @@ Fuze determines under what condition the tropedo will explode. Common fuzes are 
   This type of fuze fires when it detects a change in magnetic field, since the change is probably because of a large piece of iron, or, the target. Also this kind of fuze is not so reliable, and, will be countered if the target has demagnetizing devices installed.
 
 ## Heavy Anti-Air Guns
+
+Anti-Air Guns fires at a very high speed, making it impossible to simulate every ammo it shoots. Also, sometimes they won't aim at enemy planes, but a special air space, in order to better protect the fleet, instead of shooting down boombers.
+
+To make implementing a multi-purpose gun easier, Heavy Anti-Air Gun is a special type of ammo, other configurations are the same as Common Guns.
+
+```json
+{
+    "type" : "HAA", 
+    /* must be such string to make it works
+     */
+    "minalt" : 3000,
+    "maxalt" : 15000,
+    /* min and max altitude for this gun to fire, in foot
+     */
+    "maxdist" : 6000,
+    /* the max horizontal distance between the gun and the target, in meters.
+     */
+    "harm" : 80,
+    /* how much harm can an ammo cause if hit.
+     */ 
+    "time" : "alt/1000",
+    /* the time the ammo need to reach altitude alt foot,
+     * if not set, this default value will be used.
+     * This value means how much time are for reaction.
+     */
+    "base_accuracy" : 900,
+    /* how many ammos it needs to hit a plane under standered guidance 
+     * and the target maneuvering standeredly in clear weather.
+     * For most heavy AA guns, this number should be around 1000
+     */  
+    "range" : 20,
+    /* the range that the ammo can effectively cause harm to a plane.
+     * In meters.
+     */
+    "speed" : 9,
+    /* how much time it needs to reload, this number will override the 
+     * number reload. If not given, the argument reload will be used.
+     * In seconds.
+     */
+    "reliability" : 0.99,
+    /* the rato of the ammo explodes when the perset time is reached.
+     */
+    "number" : 600 
+}
+```
+
+Remember, this is a type of **ammo**, not gun!
+
+## Light Anti-Air Guns
+
+Unlike Heavy Anti-Air Guns, Light Anti-Air Guns have a much smaller range, stoping them from targeting. What need to mention here is that any type of Anti-Air gun with approch fuze should be classified as Heavy ones.
+
+Therefore, they have far less arguments.
+
+```json
+{
+    "speed" : 1200,
+    /* how many ammo it can fire in a minute at full speed. 
+     * This value should take reloading time into consideration.
+     */
+    "maxalt" : 5000,
+    /* max altitude for this gun to fire, in foot
+     */
+    "maxdist" : 2000,
+    /* the max horizontal distance between the gun and the target, in meters.
+     */
+    "harm" : 10, 
+    /* how much harm can an ammo cause if hit.
+     */
+    "range" : 3,
+    /* the range that the ammo can effectively cause harm to a plane.
+     * In meters.
+     */
+    "reliability" : 0.99,
+    /* the rato of getting stuck in one minute when firing at top speed.
+     * If a gun gets stuck, it will stop firing for stucktime
+     */ 
+    "stucktime" : 2,
+    /* the time need for clearing a stuck, in minutes.
+     */
+    "number" : 20000
+}
+```
+
+So, how the harm of the anti-air guns calculated?
+
+### Tracing Mode
+
+Under tracing mode, the guns will point at the target and try to hit the target. The rate of hit will be calculated as:
+
+$$ \frac{\Delta time \cdot reliability}{speed \cdot accuracy}$$
+
+Here ```accuracy``` means the ```base_accuracy``` mulitplied by all the factors, and ```speed``` means how long an ammo needs to reload.
+
+Then, if hit, the corresponding harm is done to the plane, each type gun is calculated indepently.
+
+### Intercepting Mode
+
+Under intercepting mode, all the guns will point at a space and try to cause harm to the planes passing through it.
+
+The rato will be first calculated:
+
+$$Rato = \frac{speed\cdot range^3}{TotVol}$$
+
+Here ```speed``` means the count of ammo fired per minute and ```TotVol``` means the total volume of the space. Then, for each plane's every minute in the area, a judgement of hit or not is done. If hit, the corresponding harm is done to the plane, each type gun is calculated indepently.
+
+In order to save rescources, the same type of anti-air guns will be calculated as one.
+
+When creating the space, it may be divided into some partition because of some guns don't have enough range. But once the space is created, the range of the guns will be no longer considered by the game engine.
+
+## Wing Gun
+
+Wing Guns are guns installed on planes, they are similar to Light Anti-Air Guns, but some of them are explosive. For most cases they are not designed to attack ship, so their harm calculation is relative easy.
+
+```json
+{
+    "speed" : 6000,
+    /* how many ammo it can fire in a minute at full speed. 
+     * Usually this number is much higher than LightAA, because of the extra air flow.
+     */
+    "maxdst" : 1200,
+    /* the max effective firing range, in meters.
+     */
+    "number" : 1500,
+    /* the max number of ammo.
+     */
+    "weight" : 0.07,
+    /* the weight of one piece of ammo, in kilogram.
+     */ 
+    "harm" : 30,
+    /* the harm the ammo can cause
+     */
+    "maxdep" : 20,
+    /* the max depth of armor the ammo can go through. When hitting armor, the harm
+     * will be reduced to harm*(1-actual_depth/maxdep).
+     */    
+    "explosive" : false,
+    //"reliablity" : 0.99,
+    //"missfactor" : 0.01
+    /* only for explosive ammo, when the ammo hit the target, an extra judge will be done,
+     * the ammo has reliablity rato to explode, causing full harm, otherwise it
+     * won't explode and causing harm value of missfactor*harm.
+     */ 
+}
+```
+
+Since approching and dealy fuze is not widely used on such type of gun in WW2, we don't plan to support it currently.
+
+The data of the wing gun only infects the rato of successfully causing enough harm to the target, wheather thr plane can fing a chance of firing depends more on the data of plane and pilot, and electronic equipments.
